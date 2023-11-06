@@ -41,6 +41,46 @@
 (require 'rx)
 (require 'yaml)
 
+(defgroup frontmatter nil
+  "Functions for manipulating YAML frontmatter data."
+  :group 'text)
+
+(defcustom frontmatter-date-format "%F"
+  "Time format used by `frontmatter-add-date'.
+
+See `format-time-string' for details."
+  :type 'string
+  :group 'frontmatter)
+
+(defcustom frontmatter-date-time-zone nil
+  "Time zone used by `frontmatter-add-date'.
+
+See `format-time-string' for details."
+  :type '(choice (const :tag "Local Time" nil)
+                 (const :tag "UTC" t)
+                 (string :tag "TZ string")
+                 (integer :tag "UTC offset in seconds")
+                 (sexp :tag "Other expression"))
+  :group 'frontmatter)
+
+(defcustom frontmatter-timestamp-format "%FT%T"
+  "Time format used by `frontmatter-update-timestamps'.
+
+See `format-time-string' for details."
+  :type 'string
+  :group 'frontmatter)
+
+(defcustom frontmatter-timestamp-time-zone nil
+  "Time zone used by `frontmatter-update-timestamps'.
+
+See `format-time-string' for details."
+  :type '(choice (const :tag "Local Time" nil)
+                 (const :tag "UTC" t)
+                 (string :tag "TZ string")
+                 (integer :tag "UTC offset in seconds")
+                 (sexp :tag "Other expression"))
+  :group 'frontmatter)
+
 (defvar frontmatter-section-regexp
   (rx bos
       "---\n"
@@ -135,6 +175,36 @@ section will get removed."
    (lambda (document)
      (setf (alist-get key document) value)
      document)))
+
+;;;###autoload
+(defun frontmatter-add-date ()
+  "Add the `date' frontmatter property to the current buffer if nonexistent.
+
+Customize the format and time zone via
+`frontmatter-date-format' and
+`frontmatter-date-time-zone'."
+  (interactive)
+  (or
+   (frontmatter-get 'date)
+   (frontmatter-set 'date (format-time-string frontmatter-date-format frontmatter-date-time-zone))))
+
+;;;###autoload
+(defun frontmatter-update-timestamps ()
+  "Set or update the timestamp frontmatter properties of the current buffer.
+
+The value of the `created' property is set to the current time
+only when it does not exist.  The value of the `updated' property
+is added if it does not exist, and set to the current time.
+
+Customize the format and time zone via
+`frontmatter-timestamp-format' and
+`frontmatter-timestamp-time-zone'."
+  (interactive)
+  (let ((timestring (format-time-string frontmatter-timestamp-format frontmatter-timestamp-time-zone)))
+    (frontmatter-set 'updated timestring)
+    (or
+     (frontmatter-get 'created)
+     (frontmatter-set 'created timestring))))
 
 (provide 'frontmatter)
 ;;; frontmatter.el ends here
