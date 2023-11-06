@@ -112,6 +112,7 @@ Return nil if there is none."
          (insert "---\n" yaml "\n---\n")
          document)))))
  
+;;;###autoload
 (defun frontmatter-update (func)
   "Update the frontmatter document of the current buffer using FUNC.
 
@@ -122,10 +123,12 @@ section will get removed."
          (document (funcall func document)))
     (frontmatter-embed document)))
 
+;;;###autoload
 (defun frontmatter-get (key)
   "Get a frontmatter property value associated with KEY."
   (alist-get key (frontmatter-extract)))
 
+;;;###autoload
 (defun frontmatter-set (key value)
   "Set a frontmatter property value associated with KEY to VALUE."
   (frontmatter-update
