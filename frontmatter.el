@@ -35,6 +35,27 @@
 ;;; Commentary:
 ;;
 ;; This package provides functions for manipulating YAML frontmatter data.
+;;
+;; Usage:
+;;
+;; * `frontmatter-add-date'
+;;
+;;   This command adds the "date" frontmatter property to the current buffer.
+;;
+;;     (define-key markdown-mode-map (kbd "C-c d") #'frontmatter-add-date)
+;;     (define-key gfm-mode-map      (kbd "C-c d") #'frontmatter-add-date)
+;;
+;; * `frontmatter-update-timestamps'
+;;
+;;   This command can be used to mimic what the "Update time on edit"
+;;   plugin (https://github.com/beaussan/update-time-on-edit-obsidian)
+;;   does like so:
+;;
+;;     (require 'obsidian)
+;;
+;;     (defun frontmatter-update-timestamps-before-save ()
+;;       (add-hook 'before-save-hook #'frontmatter-update-timestamps nil t))
+;;     (add-hook 'obsidian-mode-hook #'frontmatter-update-timestamps-before-save)
 
 ;;; Code:
 
@@ -88,7 +109,7 @@ See `format-time-string' for details."
         (*? (* not-newline) "\n"))
       (| "---" "...") "\n")
   "Regular expression to match a frontmatter section.
- 
+
 Group 1 should match the YAML document part between delimiters.")
 
 (defvar frontmatter-timestamp-regexp
@@ -151,7 +172,7 @@ Return nil if there is none."
          (goto-char (point-min))
          (insert "---\n" yaml "\n---\n")
          document)))))
- 
+
 ;;;###autoload
 (defun frontmatter-update (func)
   "Update the frontmatter document of the current buffer using FUNC.
