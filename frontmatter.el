@@ -63,7 +63,7 @@ See `format-time-string' for details."
                  (sexp :tag "Other expression"))
   :group 'frontmatter)
 
-(defcustom frontmatter-timestamp-format "%FT%T"
+(defcustom frontmatter-timestamp-format "%FT%H:%M"
   "Time format used by `frontmatter-update-timestamps'.
 
 See `format-time-string' for details."
@@ -97,8 +97,8 @@ Group 1 should match the YAML document part between delimiters.")
            (| (any "Tt") (+ (any " \t")))
            digit (? digit)
            ":" digit digit
-           ":" digit digit
-           (? "." (* digit))
+           (? ":" digit digit
+              (? "." (* digit)))
            (? (| (: (* (any " \t")) "Z")
                  (: (any "-+") digit (? digit) (? ":" digit digit)))))))
  "Regular expression to match a timestamp in a frontmatter property value.")
